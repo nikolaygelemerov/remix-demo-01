@@ -12,6 +12,7 @@ import type { Note } from "~/types";
 
 import { getStoredNotes, storeNotes } from "~/data/notes";
 import type { FC } from "react";
+import { useEffect } from "react";
 import { useMemo } from "react";
 
 export default function NotesPage() {
@@ -20,6 +21,10 @@ export default function NotesPage() {
   // no matter if form submission reloads the page or
   // remix Form is used with client side submission
   const notes = useLoaderData<Note[]>();
+
+  useEffect(() => {
+    console.log("notes MOUNT");
+  }, []);
 
   return (
     <main>
@@ -33,6 +38,8 @@ export default function NotesPage() {
 // Used to retrieve data from DB behind the scenes
 export const loader: LoaderFunction = async () => {
   const notes = await getStoredNotes();
+
+  console.log("loader notes: ", notes);
 
   // Throw BE error with status code
   if (!notes || notes.length === 0) {
@@ -53,6 +60,8 @@ export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const noteData = Object.fromEntries(formData) as unknown as Note;
 
+  console.log("action noteData: ", noteData);
+
   // Add BE validation
   if (noteData.title.trim().length < 5) {
     return { message: "Invalid title - must be at least 5 characters long!" };
@@ -64,7 +73,14 @@ export const action: ActionFunction = async ({ request }) => {
 
   await storeNotes(updatedNotes);
 
-  return null; // redirect("/notes");
+  console.log("HERE");
+  await new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(null);
+    }, 300);
+  });
+
+  return null;
 };
 
 export function meta() {

@@ -73,14 +73,15 @@ export const action: ActionFunction = async ({ request }) => {
 
   await storeNotes(updatedNotes);
 
-  console.log("HERE");
+  console.log("Action");
+
   await new Promise((resolve) => {
     setTimeout(() => {
       resolve(null);
     }, 300);
   });
 
-  return null;
+  return redirect("/notes");
 };
 
 export function meta() {
